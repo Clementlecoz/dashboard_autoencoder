@@ -112,6 +112,8 @@ if selected_companies and selected_labels:
         prepare_plot_data(df[df["company"] == comp], comp)
         for comp in selected_companies
     ])
+    
+    detail=["Company:N", "Score:N"]
 
     if selected_macro:
         df_macro_all = pd.concat([
@@ -120,22 +122,31 @@ if selected_companies and selected_labels:
         ])
         df_all = pd.concat([df_all, df_macro_all])
 
+    if not df_all.empty:
+        df_all["LineLabel"] = df_all["Company"] + " - " + df_all["Score"]
+
     base_chart = alt.Chart(df_all).mark_line(point=True).encode(
     x=alt.X("quarter:O", title="Quarter"),
     y=alt.Y("Value:Q", scale=alt.Scale(domain=[0, 1]), title="Value"),
-    color=alt.Color("Company:N", title="Company"),
-    
+    color=alt.Color("LineLabel:N", title="Company - Indicator"),
     strokeDash=alt.StrokeDash(
-    "LineType:N",
-    scale=alt.Scale(
-        domain=["solid", "dotted"],
-        range=[[1, 0], [4, 4]]
+        "LineType:N",
+        scale=alt.Scale(
+            domain=["solid", "dotted"],
+            range=[[1, 0], [4, 4]]
+        ),
+        legend=None
     ),
-    legend=None
-),
-
-    tooltip=["quarter", "Company", "Score", alt.Tooltip("Value", format=".2f")]
+    tooltip=[
+        "quarter",
+        "Company",
+        "Score",
+        alt.Tooltip("Value", format=".2f")
+    ]
 )
+
+
+
 
 
     threshold_df = pd.DataFrame({
