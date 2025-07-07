@@ -1,16 +1,16 @@
 import pandas as pd
 
 df = pd.read_csv("dataset1_complet.csv")
-df_ca = df[df["company"] == "Crédit Agricole"].copy()
-df_ca.head()
+df_hsbc = df[df["company"] == "HSBC"].copy()
+df_hsbc.head()
 
 
-df_ca["delta_profitability"] = df_ca["score_profitability_local"].diff()
-df_ca["delta_liquidity"] = df_ca["score_liquidity_local"].diff()
-df_ca["delta_solvency"] = df_ca["score_solvency_local"].diff()
-df_ca["delta_leverage"] = df_ca["score_leverage_adjusted_local"].diff()
+df_hsbc["delta_profitability"] = df_hsbc["score_profitability_local"].diff()
+df_hsbc["delta_liquidity"] = df_hsbc["score_liquidity_local"].diff()
+df_hsbc["delta_solvency"] = df_hsbc["score_solvency_local"].diff()
+df_hsbc["delta_leverage"] = df_hsbc["score_leverage_adjusted_local"].diff()
 
-df_ca.fillna(0, inplace=True)
+df_hsbc.fillna(0, inplace=True)
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -47,7 +47,7 @@ def get_healthy_periods(df, score_name, delta_name, p_low=0.10, p_high=0.90):
     )
     return df[healthy_mask].copy()
 
-def run_anomaly_pipeline(df_ca):
+def run_anomaly_pipeline(df_hsbc):
     features_by_score = {
         "profitability": ["score_profitability_local", "delta_profitability"],
         "liquidity": ["score_liquidity_local", "delta_liquidity"],
@@ -61,13 +61,13 @@ def run_anomaly_pipeline(df_ca):
         print(f"\n indicators : {score}")
 
 
-        df_healthy = get_healthy_periods(df_ca, score_col, delta_col)
+        df_healthy = get_healthy_periods(df_hsbc, score_col, delta_col)
         print(f" {len(df_healthy)} health period identified.")
 
 
         scaler = StandardScaler()
         X_train = scaler.fit_transform(df_healthy[[score_col, delta_col]])
-        X_full = scaler.transform(df_ca[[score_col, delta_col]])
+        X_full = scaler.transform(df_hsbc[[score_col, delta_col]])
 
         X_tr, X_val = train_test_split(X_train, test_size=0.2, random_state=42)
 
@@ -89,19 +89,19 @@ def run_anomaly_pipeline(df_ca):
 
         #  anomaly detection
         is_anomaly = mse > threshold
-        delta = df_ca[delta_col].values
+        delta = df_hsbc[delta_col].values
         anomaly_type = np.where(is_anomaly & (delta > 0), "positive",
                          np.where(is_anomaly & (delta < 0), "negative", "none"))
 
         df_errors = pd.DataFrame({
-            "date": df_ca["date"].values,
-            "company": df_ca["company"].values,
-            score_col: df_ca[score_col].values,
-            delta_col: df_ca[delta_col].values,
+            "date": df_hsbc["date"].values,
+            "company": df_hsbc["company"].values,
+            score_col: df_hsbc[score_col].values,
+            delta_col: df_hsbc[delta_col].values,
             f"reconstruction_error_{score}": mse,
             f"is_anomaly_{score}": is_anomaly,
             f"anomaly_type_{score}": anomaly_type,
-            f"threshold_{score}": [threshold] * len(df_ca)
+            f"threshold_{score}": [threshold] * len(df_hsbc)
         })
 
         df_errors_all.append(df_errors)
@@ -116,6 +116,6 @@ def run_anomaly_pipeline(df_ca):
     return df_errors_merged
 
 
-df_errors_merged = run_anomaly_pipeline(df_ca)
+df_errors_merged = run_anomaly_pipeline(df_hsbc)
 # Enregistre le résultat final
-df_errors_merged.to_csv("../app_streamlit/data/anomaly_results_ca.csv", index=False)
+df_errors_merged.to_csv("../app_streamlit/data/anomaly_results_hsbc.csv", index=False)
