@@ -43,9 +43,9 @@ def get_healthy_periods(df, score_name, delta_name, p_low=0.10, p_high=0.90):
     healthy_mask = (
         df[score_name].between(df[score_name].quantile(p_low), df[score_name].quantile(p_high)) &
         df[delta_name].between(df[delta_name].quantile(p_low), df[delta_name].quantile(p_high))
-        #df["revenue_growth"].between(-rg_threshold, rg_threshold) don't use it for the moment as threshold
     )
     return df[healthy_mask].copy()
+
 
 def run_anomaly_pipeline(df_banco):
     features_by_score = {
@@ -82,10 +82,12 @@ def run_anomaly_pipeline(df_banco):
         X_val_pred = model.predict(X_val)
         mse_val = np.mean(np.square(X_val - X_val_pred), axis=1)
 
-        # threshold 95 percentil of helathy period
+       
         mse_train = np.mean(np.square(X_train - model.predict(X_train)), axis=1)
+        
+         # threshold 95 percentil of helathy period
         threshold = np.percentile(mse_val, 95)
-        print(f" Seuil d’anomalie (95e percentile) pour {score} : {threshold:.4f}")
+        print(f" anomaly threshold (95e percentil) for {score} : {threshold:.4f}")
 
         #  anomaly detection
         is_anomaly = mse > threshold
