@@ -73,10 +73,12 @@ with st.container():
 
     st.markdown("### Navigation")
     st.markdown("""
+    - **Methodology** - Learn how scores are calculated from key financial indicators
+    - **Simplified View** - Designed for non-financial users with a focus on clarity
     - **Expert View** - Access detailed financial indicators and quarterly analysis  
-    - **Simplified View** - Designed for non-financial users with a focus on clarity  
     - **Score Explorer** - Visualize score evolution and compare between companies  
-    - **Methodology** - Learn how scores are calculated from key financial indicators  
+    - **Anomaly Detection** - Explore how AI (Autoencoder) detects unusual financial patterns
+    - **Anomaly Analysis** - View detected anomalies and compared them to known macroeconomic events  
     """)
 
     st.markdown("### What You Can Do")
@@ -84,7 +86,9 @@ with st.container():
     - Identify strong or weak financial signals  
     - Spot companies at risk using key ratios and composite scores  
     - Understand the scoring logic behind each health dimension  
-    """)
+    - Detect anomalies using advanced AI methods like AutoEncoders
+    
+                """)
 
     st.info("Use the sidebar on the left to navigate between pages.")
 

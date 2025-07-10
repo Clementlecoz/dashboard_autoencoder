@@ -1,4 +1,11 @@
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from keras.models import Model
+from keras.layers import Input, Dense
+from keras.optimizers import Adam
+import numpy as np
 import pandas as pd
+from functools import reduce
 
 df = pd.read_csv("dataset1_complet.csv")
 df_bnp = df[df["company"] == "BNP Paribas"].copy()
@@ -12,14 +19,7 @@ df_bnp["delta_leverage"] = df_bnp["score_leverage_adjusted_local"].diff()
 
 df_bnp.fillna(0, inplace=True)
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from keras.models import Model
-from keras.layers import Input, Dense
-from keras.optimizers import Adam
-import numpy as np
-import pandas as pd
-from functools import reduce
+
 
 def train_autoencoder(X_train, encoding_dim=2, epochs=100, batch_size=8, X_val=None):
     input_dim = X_train.shape[1]

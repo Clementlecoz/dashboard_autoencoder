@@ -4,7 +4,22 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
 
-st.title(" Anomalies détectées par AutoEncoder")
+st.title(" Anomalies detected by AutoEncoder")
+
+st.markdown("""
+Welcome to the **Anomaly Detection Dashboard**.
+
+This tool helps you explore **anomalies detected by an AutoEncoder model** for several major banks. 
+- Select a bank and an indicator (e.g. profitability, liquidity).
+- Visualize anomalies and related events over time.
+- Optionally, overlay macroeconomic data for additional context.
+
+Red dots = potential negative anomalies  
+Green dots = potential positive anomalies  
+Purple lines = significant news/events related to the bank
+
+Use the table below the chart to explore individual anomaly details and related events.
+""")
 
 BANK_FILES = {
     "JP Morgan Chase": "anomaly_results_jpm.csv",
@@ -19,8 +34,8 @@ BANK_FILES = {
 BANK_EVENTS = {
     # JP Morgan Chase
     "JP Morgan Chase": pd.DataFrame([
-        {"date":"2012-07-01", "event":"London Whale (loss ~$6B)", "target":"profitability"},
-        {"date":"2013-12-01", "event":"$13B DOJ subprime", "target":"profitability/solvency/leverage/liquidity"},
+        {"date":"2012-07-01", "event":"London Whale", "target":"profitability"},
+        {"date":"2013-07-01", "event":"$13B DOJ subprime", "target":"profitability/solvency/leverage/liquidity"},
         {"date":"2019-09-17", "event":"Tensions repo US", "target":"liquidity"},
         {"date":"2020-03-31", "event":"COVID-19", "target":"profitability/liquidity/growth"},
         {"date":"2021-01-15", "event":"Record $12.1B Q4 profit", "target":"profitability"},
@@ -70,6 +85,7 @@ BANK_EVENTS = {
     ])
 }
 
+scores = ["profitability", "liquidity", "solvency", "leverage"]
 
 
 bank_name = st.selectbox("Select a bank :", list(BANK_FILES.keys()))
@@ -108,7 +124,7 @@ for score in scores:
 
 
 
-selected_score = st.selectbox("Choisir un indicateur :", scores)
+selected_score = st.selectbox(" Select an indicator :", scores)
 
 
 @st.cache_data
@@ -132,7 +148,7 @@ if macro_df is not None:
 
         if available_macro_vars:
             selected_macro_var = st.selectbox(
-                "Choisir une variable macroéconomique à afficher :",
+                "Select macroeconomic variable :",
                 options=["Aucune"] + available_macro_vars,
                 index=0
             )
@@ -210,3 +226,46 @@ def plot_anomalies(df, score_name, company, macro_df=None, macro_var=None):
 
 
 plot_anomalies(df, selected_score, bank_name, macro_bank_df if selected_macro_var != "Aucune" else None, selected_macro_var)
+
+
+# === Table of anomalies with event context ===
+st.subheader("📋 Anomaly Table with Events")
+
+# Filter anomalies of selected score
+anomaly_col = f"is_anomaly_{selected_score}"
+delta_col = f"delta_{selected_score}"
+nature_col = f"anomaly_nature_{selected_score}"
+
+# Create filtered anomaly DataFrame
+df_anomalies = df[
+    (df[anomaly_col]) & 
+    (df["company"].str.contains(bank_name, case=False, na=False))
+].copy()
+
+# Add anomaly type filter
+selected_nature = st.selectbox("Filter anomaly type:", ["all", "good", "bad"])
+if selected_nature != "all":
+    df_anomalies = df_anomalies[df_anomalies[nature_col] == selected_nature]
+
+# Add nearby events (±1 quarter = ~90 days)
+events_df = BANK_EVENTS.get(bank_name)
+if events_df is not None:
+    events_df["date"] = pd.to_datetime(events_df["date"])
+    events_df_score = events_df[events_df["target"].str.contains(selected_score.lower(), na=False)]
+
+    from datetime import timedelta
+
+    def find_nearby_events(anomaly_date, events_df, tolerance=timedelta(days=90)):
+        nearby_events = events_df[
+            (events_df["date"] >= anomaly_date - tolerance) & 
+            (events_df["date"] <= anomaly_date + tolerance)
+        ]
+        return ", ".join(nearby_events["event"]) if not nearby_events.empty else ""
+
+    df_anomalies["event"] = df_anomalies["date"].apply(lambda d: find_nearby_events(d, events_df_score))
+else:
+    df_anomalies["event"] = ""
+
+# Display selected columns
+columns_to_display = ["date", f"reconstruction_error_{selected_score}", delta_col, nature_col, "event"]
+st.dataframe(df_anomalies[columns_to_display].sort_values("date"), use_container_width=True)
