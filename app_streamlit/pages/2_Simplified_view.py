@@ -167,7 +167,7 @@ with st.expander("ℹ️ How to read this page"):
     st.markdown("""
 **This page offers a simplified overview** of each company's financial health — no finance background needed.
 
-### What’s shown?
+What’s shown?
 
 -  **Alerts** if a financial indicator drops (e.g., ↓ Liquidity or ↓ Profitability),
 -  **Statuses** like “Strong”, “Danger”, or “Stable” to summarize each quarter,
@@ -175,7 +175,9 @@ with st.expander("ℹ️ How to read this page"):
 
 ---
 
-###  Local vs Global Scores:
+ Local vs Global Scores:""") 
+    with st.expander("Difference between local and global score", expanded=False):
+        st.markdown("""
 
 - **🔹 Local Score**: compares a company **to itself over time**  
   → "How good is this quarter compared to its past?"
@@ -186,8 +188,11 @@ with st.expander("ℹ️ How to read this page"):
 *Example: A Local Status = ‘Strong’ means this is one of the company’s best quarters. A Global Status = ‘Danger’ might mean others are doing better in the same period.*
 
 ---
-### How to understand indicators :
-                
+ """)
+    st.markdown("""
+    How to understand indicators :""")
+    with st.expander("Indicators explained", expanded=False):
+        st.markdown("""           
      Profitability (Earnings Strength)
 Measures how well a company generates profit from its operations.
 → High profitability = strong earnings capacity.
@@ -202,10 +207,10 @@ Shows whether the company can meet long-term obligations (like debt).
 
     Leverage (Debt Load)
 Indicates how much debt the company uses to finance its assets.
-→ High leverage = more risk if earnings drop.
-    
-                
-###  Tip:
+→ High leverage = more risk if earnings drop.""")
+
+    st.markdown("""          
+
 Look for patterns:  
 - ✅ Many “Strong” or “Excellent” statuses → healthy trend  
 - ⚠️ Repeated “Danger” or “Risk” → may need attention  
