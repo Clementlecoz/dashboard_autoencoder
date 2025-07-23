@@ -9,17 +9,44 @@ st.title(" Anomalies detected by AutoEncoder")
 st.markdown("""
 Welcome to the **Anomaly Detection Dashboard**.
 
-This tool helps you explore **anomalies detected by an AutoEncoder model** for several major banks. 
-- Select a bank and an indicator (e.g. profitability, liquidity).
-- Visualize anomalies and related events over time.
-- Optionally, overlay macroeconomic data for additional context.
+This tool helps you explore **anomalies detected by an AutoEncoder model** for several major banks.""")
+with st.expander("How to use this page"):
+    st.markdown("""
+                
+    - Select a bank and an indicator :      
+            
+        Profitability (Earnings Strength)
 
-Red dots = potential negative anomalies  
-Green dots = potential positive anomalies  
-Purple lines = significant news/events related to the bank
+        Liquidity (Cash Cushion)
+
+        Solvency (Long-Term Strength)
+
+        Leverage (Debt Load).
+
+
+    - Visualize anomalies and related events over time :
+                
+    🔴Red dots = potential negative anomalies  
+
+    🟢Green dots = potential positive anomalies
+                
+    (--🟣)Purple lines = significant news/events related to the bank
+
+    - Optionally : Overlay macroeconomic indicators for additional context.  
+    These indicators (e.g., GDP growth, inflation and interest rate ) reflect the economic situation of the countries where the bank operates.  
+    Comparing them with anomalies can help explain some abnormal behaviors — for example, a drop in GDP growth might justify weaker profitability or liquidity.
+
+    
+    """)
+
+st.markdown("""
 
 Use the table below the chart to explore individual anomaly details and related events.
-""")
+
+        """)
+
+
+
 
 BANK_FILES = {
     "JP Morgan Chase": "anomaly_results_jpm.csv",
@@ -149,14 +176,14 @@ if macro_df is not None:
         if available_macro_vars:
             selected_macro_var = st.selectbox(
                 "Select macroeconomic variable :",
-                options=["Aucune"] + available_macro_vars,
+                options=["Nothing"] + available_macro_vars,
                 index=0
             )
     else:
         st.info("Aucune donnée macroéconomique trouvée pour cette banque.")
-        selected_macro_var = "Aucune"
+        selected_macro_var = "Nothing"
 else:
-    selected_macro_var = "Aucune"
+    selected_macro_var = "Nothing"
 
 
 def plot_anomalies(df, score_name, company, macro_df=None, macro_var=None):
@@ -229,7 +256,7 @@ plot_anomalies(df, selected_score, bank_name, macro_bank_df if selected_macro_va
 
 
 # === Table of anomalies with event context ===
-st.subheader("📋 Anomaly Table with Events")
+st.subheader("Anomaly Table with Events")
 
 # Filter anomalies of selected score
 anomaly_col = f"is_anomaly_{selected_score}"
@@ -266,6 +293,18 @@ if events_df is not None:
 else:
     df_anomalies["event"] = ""
 
-# Display selected columns
+# Simplify column names for display
 columns_to_display = ["date", f"reconstruction_error_{selected_score}", delta_col, nature_col, "event"]
-st.dataframe(df_anomalies[columns_to_display].sort_values("date"), use_container_width=True)
+df_anomalies_display = df_anomalies[columns_to_display].rename(columns={
+    "date": "Date",
+    f"reconstruction_error_{selected_score}": "Error",
+    delta_col: "Δ Score",
+    nature_col: "Type",
+    "event": "Nearby Event"
+})
+
+# Format the date (YYYY-MM-DD only, remove hour)
+df_anomalies_display["Date"] = pd.to_datetime(df_anomalies_display["Date"]).dt.strftime("%Y-%m-%d")
+
+# Display the simplified table
+st.dataframe(df_anomalies_display.sort_values("Date"), use_container_width=True)

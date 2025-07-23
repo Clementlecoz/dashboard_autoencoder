@@ -178,6 +178,73 @@ df["Rev Growth"] = df["revenue_growth"].apply(format_percentage)
 
 st.title("Company Financial Score Dashboard")
 
+with st.expander("ℹ️ How to use this dashboard", expanded=False):
+    st.markdown("""
+This dashboard helps you assess the **financial health of banks** using local and global scoring models.
+
+---
+
+### How to use this page:
+
+                
+- **Choose a view mode** below:
+    - **Company Over Time:** Track one bank across several quarters
+    - **Quarter Comparison:** Compare multiple banks at one specific time point
+                
+- **Select a score view**""")
+    with st.expander("Difference between local and global score", expanded=False):    
+        st.markdown("""   :    
+        
+            🔹 Local Score 
+            - Compares the company **against its own past performance**.  
+            - Helps detect internal improvements or deterioration.  
+            - Example: A local score of 85% means this quarter is better than 85% of its previous quarters.
+
+            🔸 Global Score  
+            - Compares the company **against all other companies in the same quarter**.  
+            - Helps benchmark its position in the market at a given time.  
+            - Example: A global score of 85% means the company is stronger than 85% of its peers this quarter.
+
+            All Scores
+            - shows both local and global scores for a comprehensive view.
+    These scores allow you to assess performance over time **within the company** (local) or **against competitors** (global).""")
+    st.markdown("""**How to interpret indiactor** """)
+    with st.expander("Definition of each indicator", expanded=False):
+        st.markdown("""
+                     Profitability (Earnings Strength)
+                    Measures how well a company generates profit from its operations.
+                    → High profitability = strong earnings capacity.
+
+                     Liquidity (Cash Cushion)
+                    Reflects how easily a company can pay its short-term bills.
+                    → Good liquidity = company won’t run out of cash soon.
+
+                     Solvency (Long-Term Strength)
+                    Shows whether the company can meet long-term obligations (like debt).
+                    → Strong solvency = company is financially stable over time.
+
+                     Leverage (Debt Load)
+                    Indicates how much debt the company uses to finance its assets.
+                    → High leverage = more risk if earnings drop.
+""")
+    st.markdown("""            
+    **What do the scores mean?**  
+            A score of **90%** means the company is better than **90%** of the reference group.  
+            In other words, it ranks in the **top 10%**.
+
+
+
+    - **Understand the status colors**:
+        - 🟢 **Strong / Excellent Health** → Positive signals
+        - 🟡 **Caution / Mixed Risk** → Mixed or early warning signs
+        - 🔴 **Danger / Critical Risk** → Multiple weak areas or significant concern
+
+    - **Revenue Growth** and alerts give additional context
+
+
+    *Tip:* You can hover over column headers or scroll horizontally to see full indicators.
+    """)
+
 
 cols = {
     "score_profitability_local": "Profitability (Local)",
@@ -226,11 +293,7 @@ if selected_mode:
         ],
         key="score_view_radio"
     )
-    st.markdown("""
-    What do the scores mean:
-    - A score of 90% means the company outperforms 90% of peers
-    - In other words, it ranks in the top 10%
-    """)
+    
 
     
     if not view_option.startswith("  "):

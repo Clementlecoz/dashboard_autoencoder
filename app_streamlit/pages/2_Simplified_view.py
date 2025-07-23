@@ -163,14 +163,54 @@ df["Global Status"] = df.apply(get_global_status, axis=1)
 # streamlit app
 st.title("Simplified Financial Health View")
 
-st.markdown("""
-This view provides an **accessible summary** of each company's financial health over time.
-It focuses on:
+with st.expander("ℹ️ How to read this page"):
+    st.markdown("""
+**This page offers a simplified overview** of each company's financial health — no finance background needed.
 
-- Key **alerts** and **signals** per quarter (ex : profitability drop, revenue drop),
-- Whether a quarter was strong, weak, or required attention,
-- Simple **recommendations** for interpretation.
-""")
+### What’s shown?
+
+-  **Alerts** if a financial indicator drops (e.g., ↓ Liquidity or ↓ Profitability),
+-  **Statuses** like “Strong”, “Danger”, or “Stable” to summarize each quarter,
+-  **Both Local and Global perspectives** to make the signals easier to understand.
+
+---
+
+###  Local vs Global Scores:
+
+- **🔹 Local Score**: compares a company **to itself over time**  
+  → "How good is this quarter compared to its past?"
+
+- **🔸 Global Score**: compares a company **to other companies this quarter**  
+  → "How well does it rank among peers now?"
+
+*Example: A Local Status = ‘Strong’ means this is one of the company’s best quarters. A Global Status = ‘Danger’ might mean others are doing better in the same period.*
+
+---
+### How to understand indicators :
+                
+     Profitability (Earnings Strength)
+Measures how well a company generates profit from its operations.
+→ High profitability = strong earnings capacity.
+
+    Liquidity (Cash Cushion)
+Reflects how easily a company can pay its short-term bills.
+→ Good liquidity = company won’t run out of cash soon.
+
+    Solvency (Long-Term Strength)
+Shows whether the company can meet long-term obligations (like debt).
+→ Strong solvency = company is financially stable over time.
+
+    Leverage (Debt Load)
+Indicates how much debt the company uses to finance its assets.
+→ High leverage = more risk if earnings drop.
+    
+                
+###  Tip:
+Look for patterns:  
+- ✅ Many “Strong” or “Excellent” statuses → healthy trend  
+- ⚠️ Repeated “Danger” or “Risk” → may need attention  
+    """)
+
 
 
 company = st.selectbox("Select a company to analyze:", [""] + sorted(df["company"].unique()))
@@ -193,9 +233,9 @@ if company:
 
     st.subheader(f" Local Summary for {company}")
     st.markdown(f"""
-    - **🛑 Quarters at Risk:** {risk_count}
-    - **⚠️ Danger/Watch Quarters:** {danger_count}
-    - **✅ Strong Quarters:** {strong_count}
+    - **🛑 Quarters at Risk:** {risk_count} *quarter(s) (see in the table the details for each of them -> date...)*
+    - **⚠️ Danger/Watch Quarters:** {danger_count} *quarter(s)*
+    - **✅ Strong Quarters:** {strong_count} *quarter(s)*
     """)
 
    
