@@ -178,8 +178,8 @@ df["Rev Growth"] = df["revenue_growth"].apply(format_percentage)
 
 st.title("Company Financial Score Dashboard")
 
-with st.expander("ℹ️ How to use this dashboard", expanded=False):
-    st.markdown("""
+st.markdown(""" How to use this dashboard
+            
 This dashboard helps you assess the **financial health of banks** using local and global scoring models.
 
 ---
@@ -190,10 +190,16 @@ This dashboard helps you assess the **financial health of banks** using local an
 - **Choose a view mode** below:
     - **Company Over Time:** Track one bank across several quarters
     - **Quarter Comparison:** Compare multiple banks at one specific time point
+""")
+                       
+st.markdown("""
+            - **Select a score view**
                 
-- **Select a score view**""")
-    with st.expander("Difference between local and global score", expanded=False):    
-        st.markdown("""   :    
+ """)
+
+
+with st.expander("Difference between local and global score", expanded=False):    
+    st.markdown("""   :    
         
             🔹 Local Score 
             - Compares the company **against its own past performance**.  
@@ -208,9 +214,10 @@ This dashboard helps you assess the **financial health of banks** using local an
             All Scores
             - shows both local and global scores for a comprehensive view.
     These scores allow you to assess performance over time **within the company** (local) or **against competitors** (global).""")
-    st.markdown("""**How to interpret indiactor** """)
-    with st.expander("Definition of each indicator", expanded=False):
-        st.markdown("""
+    
+st.markdown("""- **Explore the results** in a table format""")
+with st.expander("Definition of each indicator", expanded=False):
+    st.markdown("""
                      Profitability (Earnings Strength)
                     Measures how well a company generates profit from its operations.
                     → High profitability = strong earnings capacity.

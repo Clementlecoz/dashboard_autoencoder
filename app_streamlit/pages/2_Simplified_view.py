@@ -173,11 +173,9 @@ What’s shown?
 -  **Statuses** like “Strong”, “Danger”, or “Stable” to summarize each quarter,
 -  **Both Local and Global perspectives** to make the signals easier to understand.
 
----
-
- Local vs Global Scores:""") 
-    with st.expander("Difference between local and global score", expanded=False):
-        st.markdown("""
+""") 
+with st.expander("Difference between local and global score", expanded=False):
+    st.markdown("""
 
 - **🔹 Local Score**: compares a company **to itself over time**  
   → "How good is this quarter compared to its past?"
@@ -189,10 +187,9 @@ What’s shown?
 
 ---
  """)
-    st.markdown("""
-    How to understand indicators :""")
-    with st.expander("Indicators explained", expanded=False):
-        st.markdown("""           
+
+with st.expander("Indicators explained", expanded=False):
+    st.markdown("""           
      Profitability (Earnings Strength)
 Measures how well a company generates profit from its operations.
 → High profitability = strong earnings capacity.
